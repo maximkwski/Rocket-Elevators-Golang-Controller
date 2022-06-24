@@ -101,8 +101,10 @@ func (b *Battery) assignElevator(_requestedFloor int, _direction string) (*Colum
 	column := *b.findBestColumn(_requestedFloor)
 	elevator := *column.findElevator(1, _direction)
 	elevator.addNewRequest(1)
+	elevator.move()
 
 	elevator.addNewRequest(_requestedFloor)
+	elevator.move()
 
 	return &column, &elevator
 }
