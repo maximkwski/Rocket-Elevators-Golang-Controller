@@ -18,11 +18,11 @@ type Battery struct {
 var columnID int = 1
 var floorRequestButtonID int = 1
 
-func (b *Battery) NewBattery(_id int, _amountOfColumns int, _amountOfFloors int, _amountOfBasements int, _amountOfElevatorPerColumn int) *Battery {
+func NewBattery(_id int, _amountOfColumns int, _amountOfFloors int, _amountOfBasements int, _amountOfElevatorPerColumn int) *Battery {
 	return &Battery{_id, "online", _amountOfColumns, _amountOfFloors, _amountOfBasements, _amountOfElevatorPerColumn, *createColumns(_amountOfColumns, _amountOfFloors, _amountOfBasements, _amountOfElevatorPerColumn), *createFloorRequestButtons(_amountOfFloors)}
 }
 
-func (b *Battery) createBasementColumn(_amountOfBasements int, _amountOfElevatorPerColumn int) {
+func createBasementColumn(_amountOfBasements int, _amountOfElevatorPerColumn int) {
 
 	servedFloors := []int{}
 	floor := -1
@@ -33,10 +33,11 @@ func (b *Battery) createBasementColumn(_amountOfBasements int, _amountOfElevator
 	}
 }
 
-func (b *Battery) createColumns(_amountOfColumns int, _amountOfFloors int, _amountOfBasements int, _amountOfElevatorPerColumn int) *[]Column {
+func createColumns(_amountOfColumns int, _amountOfFloors int, _amountOfBasements int, _amountOfElevatorPerColumn int) *[]Column {
+	var columnsList []Column
 	if _amountOfBasements > 0 {
-		b.createBasementFloorRequestButtons(_amountOfBasements)
-		b.createBasementColumn(_amountOfBasements, _amountOfElevatorPerColumn)
+		createBasementFloorRequestButtons(_amountOfBasements)
+		createBasementColumn(_amountOfBasements, _amountOfElevatorPerColumn)
 		_amountOfColumns -= 1
 	} // WHERE THIS GOES
 	amountOfFloorsPerColumn := int(math.Ceil(float64(_amountOfFloors) / float64(_amountOfColumns)))
@@ -50,29 +51,31 @@ func (b *Battery) createColumns(_amountOfColumns int, _amountOfFloors int, _amou
 			}
 		}
 		column := *NewColumn(columnID, _amountOfFloors, _amountOfElevatorPerColumn, servedFloors, false)
-		b.columnsList = append(b.columnsList, column)
+		columnsList = append(columnsList, column)
 		columnID++
 	}
 	return &columnsList
 
 }
 
-func (b *Battery) createFloorRequestButtons(_amountOfFloors int) *[]FloorRequestButton {
+func createFloorRequestButtons(_amountOfFloors int) *[]FloorRequestButton {
 	buttonFloor := 1
+	var floorRequestButtonsList []FloorRequestButton
 	for i := 0; i < _amountOfFloors; i++ {
 		floorRequestButton := *NewFloorRequestButton(floorRequestButtonID, "off", buttonFloor, "up")
-		b.FloorRequestButtonsList = append(b.FloorRequestButtonsList, floorRequestButton)
+		floorRequestButtonsList = append(floorRequestButtonsList, floorRequestButton)
 		buttonFloor++
 		floorRequestButtonID++
 	}
 	return &floorRequestButtonsList
 }
 
-func (b *Battery) createBasementFloorRequestButtons(_amountOfBasements int) *[]FloorRequestButton {
+func createBasementFloorRequestButtons(_amountOfBasements int) *[]FloorRequestButton {
 	buttonFloor := -1
+	var floorRequestButtonsList []FloorRequestButton
 	for i := 0; i < _amountOfBasements; i++ {
 		floorRequestButton := *NewFloorRequestButton(floorRequestButtonID, "off", buttonFloor, "down")
-		b.FloorRequestButtonsList = append(b.FloorRequestButtonsList, floorRequestButton)
+		floorRequestButtonsList = append(floorRequestButtonsList, floorRequestButton)
 		buttonFloor--
 		floorRequestButtonID++
 	}
@@ -82,24 +85,24 @@ func (b *Battery) createBasementFloorRequestButtons(_amountOfBasements int) *[]F
 func (b *Battery) findBestColumn(_requestedFloor int) *Column {
 
 	selectedColumn := b.columnsList[0]
-	for i, column := range b.columnsList {
-		slice1 := column
-		for _, x := range slice1 {
+	for _, column := range b.columnsList {
+		for _, x := range column.servedFloors {
 			if x == _requestedFloor {
-				selectedColumn = column
+				// selectedColumn = column
+				return &column
 			}
 		}
 	}
-	return selectedColumn
+	return &selectedColumn
 }
 
 //Simulate when a user press a button at the lobby
-// func (b *Battery) assignElevator(_requestedFloor int, _direction string) (*Column, *Elevator) {
-// 	column := *b.findBestColumn(_requestedFloor)
-// 	elevator := *column.findElevator(1, _direction)
-// 	elevator.addNewRequest(1)
+func (b *Battery) assignElevator(_requestedFloor int, _direction string) (*Column, *Elevator) {
+	column := *b.findBestColumn(_requestedFloor)
+	elevator := *column.findElevator(1, _direction)
+	elevator.addNewRequest(1)
 
-// 	elevator.addNewRequest(_requestedFloor)
+	elevator.addNewRequest(_requestedFloor)
 
-// 	return (&column, &elevator)
-// }
+	return &column, &elevator
+}

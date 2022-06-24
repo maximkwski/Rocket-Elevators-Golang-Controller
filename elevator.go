@@ -10,11 +10,11 @@ type Elevator struct {
 	direction             string
 	floorRequestsList     []int
 	completedRequestsList []int
-	//door???
+	door                  Door
 }
 
 func NewElevator(_id int, _status string, _amountOfFloors int, _currentFLoor int) *Elevator {
-	return &Elevator{_id, _status, _amountOfFloors, _currentFLoor, "", []int{}, []int{}}
+	return &Elevator{_id, _status, _amountOfFloors, _currentFLoor, "", []int{}, []int{}, *NewDoor("closed")}
 }
 
 func (e *Elevator) move() {
@@ -58,7 +58,7 @@ func (e *Elevator) sortFloorList() {
 }
 
 func (e *Elevator) operateDoors() {
-	//?????????
+	e.door.status = "opened"
 }
 
 func (e *Elevator) addNewRequest(requestedFloor int) {
@@ -75,11 +75,11 @@ func (e *Elevator) addNewRequest(requestedFloor int) {
 
 }
 
-func contains(list []int, req int) bool {
-	for _, v := range list {
-		if v == req {
-			return true
-		}
-	}
-	return false
-}
+// func contains(list []int, req int) bool {
+// 	for _, v := range list {
+// 		if v == req {
+// 			return true
+// 		}
+// 	}
+// 	return false
+// }

@@ -5,6 +5,6 @@ type Door struct {
 	status string
 }
 
-func (d *Door) NewDoor() *Door {
-	return &Door{1, "status"}
+func NewDoor(_status string) *Door {
+	return &Door{1, _status}
 }
