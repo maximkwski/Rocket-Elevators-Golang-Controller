@@ -21,18 +21,18 @@ func (e *Elevator) move() {
 
 	// screenDisplay := 0
 	for len(e.floorRequestsList) > 0 {
+		e.sortFloorList()
 		destination := e.floorRequestsList[0]
 		e.status = "moving"
 		if e.currentFloor < destination {
 			e.direction = "up"
-			e.sortFloorList()
 			for e.currentFloor < destination {
 				e.currentFloor++
 				// screenDisplay = e.currentFloor
 			}
 		} else if e.currentFloor > destination {
 			e.direction = "down"
-			e.sortFloorList()
+			// e.sortFloorList()
 			for e.currentFloor > destination {
 				e.currentFloor--
 				// screenDisplay = e.currentFloor
@@ -74,12 +74,3 @@ func (e *Elevator) addNewRequest(requestedFloor int) {
 	}
 
 }
-
-// func contains(list []int, req int) bool {
-// 	for _, v := range list {
-// 		if v == req {
-// 			return true
-// 		}
-// 	}
-// 	return false
-// }

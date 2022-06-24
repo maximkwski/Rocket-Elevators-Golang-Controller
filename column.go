@@ -54,9 +54,9 @@ func createElevators(_amountOfFloors int, _amountOfElevators int) *[]Elevator {
 }
 
 //Simulate when a user press a button on a floor to go back to the first floor
-func (c *Column) requestElevator(userPosition int, direction string) *Elevator {
-	elevator := *c.findElevator(userPosition, direction)
-	elevator.addNewRequest(userPosition)
+func (c *Column) requestElevator(_requestedFloor int, direction string) *Elevator {
+	elevator := *c.findElevator(_requestedFloor, direction)
+	elevator.addNewRequest(_requestedFloor)
 	elevator.move()
 
 	elevator.addNewRequest(1)
@@ -76,16 +76,16 @@ func (c *Column) findElevator(requestedFloor int, requestedDirection string) *El
 	if requestedFloor == 1 {
 		for _, elevator := range c.elevatorsList {
 			//The elevator is at the lobby and already has some requests. It is about to leave but has not yet departed
-			if 1 == elevator.currentFloor && elevator.status == "stopped" {
+			if elevator.currentFloor == 1 && elevator.status == "stopped" {
 				bestElevatorInformations = *checkIfElevatorIsBetter(1, elevator, bestElevatorInformations, requestedFloor)
 				//The elevator is at the lobby and has no requests
-			} else if 1 == elevator.currentFloor && elevator.status == "idle" {
+			} else if elevator.currentFloor == 1 && elevator.status == "idle" {
 				bestElevatorInformations = *checkIfElevatorIsBetter(2, elevator, bestElevatorInformations, requestedFloor)
 				//The elevator is lower than me and is coming up. It means that I'm requesting an elevator to go to a basement, and the elevator is on it's way to me.
-			} else if 1 > elevator.currentFloor && elevator.direction == "up" {
+			} else if elevator.currentFloor < 1 && elevator.direction == "up" {
 				bestElevatorInformations = *checkIfElevatorIsBetter(3, elevator, bestElevatorInformations, requestedFloor)
 				//The elevator is above me and is coming down. It means that I'm requesting an elevator to go to a floor, and the elevator is on it's way to me
-			} else if 1 < elevator.currentFloor && elevator.direction == "down" {
+			} else if elevator.currentFloor > 1 && elevator.direction == "down" {
 				bestElevatorInformations = *checkIfElevatorIsBetter(3, elevator, bestElevatorInformations, requestedFloor)
 				//The elevator is not at the first floor, but doesn't have any request
 			} else if elevator.status == "idle" {
